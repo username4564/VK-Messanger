@@ -16,7 +16,7 @@ Vk Messenger программа предназначенная для обмен
 
 
 <h2>Интерфейс</h2>
-<h3>Скриншоты интерфейса программы</h3>
+Скриншоты интерфейса программы
 ![Screenshot](https://github.com/username4564/VK-Messanger/blob/master/Image/1.png) ![Screenshot](https://github.com/username4564/VK-Messanger/blob/master/Image/2.png)
 
 
@@ -24,3 +24,7 @@ Vk Messenger программа предназначенная для обмен
 
 
 ![Screenshot](https://github.com/username4564/VK-Messanger/blob/master/Image/5.png) ![Screenshot](https://github.com/username4564/VK-Messanger/blob/master/Image/6.png)
+
+
+<h2>Документация</h2>
+Исходный код программы является документированными, а также содержит комментарии. Для того чтобы просмотреть документацию, необходимо открыть /documentation/html/index.html в любом браузере.
