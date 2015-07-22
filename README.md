@@ -11,5 +11,11 @@ Vk Messenger программа предназначенная для обмен
 - Осуществлять поиск по списку друзей с применением фильтров
 
 
+<h2>Превью</h2>
+![Screenshot](image/nexus.jpg)
+
+
 <h2>Интерфейс</h2>
-![Screenshot](image/nexus.png)
+<h3>Скриншоты интерфейса программы</h3>
+![Screenshot](/image/1.png) ![Screenshot](/image/2.png)
+![Screenshot](/image/3.png) ![Screenshot](/image/4.png)
