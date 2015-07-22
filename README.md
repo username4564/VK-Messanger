@@ -21,3 +21,6 @@ Vk Messenger программа предназначенная для обмен
 
 
 ![Screenshot](https://github.com/username4564/VK-Messanger/blob/master/Image/3.png) ![Screenshot](https://github.com/username4564/VK-Messanger/blob/master/Image/4.png)
+
+
+![Screenshot](https://github.com/username4564/VK-Messanger/blob/master/Image/5.png) ![Screenshot](https://github.com/username4564/VK-Messanger/blob/master/Image/6.png)
