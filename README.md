@@ -1,4 +1,4 @@
-# VK Messanger Android App
+# ![Logo](https://github.com/username4564/VK-Messanger/blob/master/Image/icon.png) VK Messanger Android App
 Vk Messenger программа предназначенная для обмена сообщениями в социальной сети ВКонтакте.
 
 
