@@ -1,0 +1,36 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.qto.ru.vkmessanger.fragments.OnlineFriendsFragment"
+    android:background="@android:color/white"
+    android:orientation="vertical">
+
+    <!-- TODO: Update blank fragment layout -->
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/linearLayout">
+
+        <android.support.v7.widget.SearchView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/search"
+            android:layout_weight="1" />
+
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/filter"
+            android:layout_gravity="center_vertical"
+            android:src="@drawable/abc_spinner_mtrl_am_alpha" />
+
+    </LinearLayout>
+
+    <ListView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/friends" />
+
+</LinearLayout>

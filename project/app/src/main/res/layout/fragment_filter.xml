@@ -1,0 +1,107 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.qto.ru.vkmessanger.dialogs.FilterDialog"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:id="@+id/sex"
+            android:text="@string/text_sex" />
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <RadioGroup
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <RadioButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/text_sex_all"
+                    android:id="@+id/all"
+                    android:checked="true"
+                    android:layout_marginRight="4dp" />
+
+                <RadioButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/text_sex_man"
+                    android:id="@+id/man"
+                    android:layout_gravity="center_horizontal"
+                    android:checked="false"
+                    android:layout_marginRight="4dp" />
+
+                <RadioButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/text_sex_girl"
+                    android:id="@+id/girl"
+                    android:layout_gravity="right"
+                    android:checked="false" />
+            </RadioGroup>
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/row_vertical_margin"></FrameLayout>
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="@string/text_age"
+            android:id="@+id/age" />
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <Spinner
+                android:layout_width="60dp"
+                android:layout_height="wrap_content"
+                android:id="@+id/from"
+                android:spinnerMode="dropdown" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:text="-"
+                android:id="@+id/textView"
+                android:layout_gravity="center_vertical"
+                android:textStyle="bold"
+                android:layout_marginLeft="8dp"
+                android:layout_marginRight="8dp" />
+
+            <Spinner
+                android:layout_width="60dp"
+                android:layout_height="wrap_content"
+                android:id="@+id/to"
+                android:spinnerMode="dropdown" />
+
+        </LinearLayout>
+    </LinearLayout>
+
+</LinearLayout>

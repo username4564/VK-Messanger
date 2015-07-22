@@ -1,0 +1,10 @@
+<resources>
+
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+        <item name="colorPrimaryDark">@color/statusBarColor</item>
+        <item name="colorPrimary">@color/actionBarColor</item>
+        <!--<item name="android:textColorPrimary">@color/actionBarTextColor</item>-->
+    </style>
+
+</resources>

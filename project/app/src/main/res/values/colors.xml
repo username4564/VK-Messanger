@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="statusBarColor">#336484</color>
+    <color name="actionBarColor">#3D769D</color>
+    <color name="actionBarTextColor">#FAFAFA</color>
+    <color name="navigationDrawerColor">#C0C0C0</color>
+
+    <color name="actionBarTextColorSecond">#444444</color>
+
+    <color name="onlineStatus">#7BAFE4</color>
+
+    <color name="messageNoRead">#D5DDE5</color>
+    <color name="messageBackground">#F2F5F7</color>
+    <color name="messageLeft">#FFFFFF</color>
+    <color name="messageRight">#DAE3ED</color>
+    <color name="messageTime">#BFBFBF</color>
+</resources>
