@@ -1,10 +1,10 @@
 # ![Logo](https://github.com/username4564/VK-Messanger/blob/master/Image/icon.png) VK Messanger Android App
-Vk Messenger программа предназначенная для обмена сообщениями в социальной сети ВКонтакте.
+Vk Messenger - программа предназначенная для обмена сообщениями в социальной сети ВКонтакте.
 
 
 <h2>Возможности</h2>
 С данным приложением, вы можете:
-- Просматривать список всех друзей
+- Просматривать список друзей
 - Просматривать список друзей находящихся в сети
 - Просматривать диалоги и информацию о них
 - Отправлять сообщения друзьям
@@ -16,7 +16,7 @@ Vk Messenger программа предназначенная для обмен
 
 
 <h2>Интерфейс</h2>
-Скриншоты интерфейса программы
+Скриншоты интерфейса программы:
 
 ![Screenshot](https://github.com/username4564/VK-Messanger/blob/master/Image/1.png) ![Screenshot](https://github.com/username4564/VK-Messanger/blob/master/Image/2.png)
 
