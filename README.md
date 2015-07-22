@@ -12,7 +12,7 @@ Vk Messenger программа предназначенная для обмен
 
 
 <h2>Превью</h2>
-![Screenshot](image/nexus.jpg)
+![Screenshot](https://github.com/username4564/VK-Messanger/blob/master/Image/nexus.jpg)
 
 
 <h2>Интерфейс</h2>
