@@ -37,10 +37,10 @@ public class AuthActivity extends Activity {
 
         mAuth.setWebViewClient(new VkWebViewClient());
 
-        String url = "http://oauth.vk.com/authorize?client_id=" +
+        String url = "https://oauth.vk.com/authorize?client_id=" +
                 VK_APP_ID + "&scope=friends,messages,offline&redirect_uri=" +
                 URLEncoder.encode(VK_REDIRECT_URL) + "&display=mobile"
-                + "&v=5.34" + "&response_type=token";
+                + "&v=5.35" + "&response_type=token";
         mAuth.loadUrl(url);
         mAuth.setVisibility(View.VISIBLE);
     }

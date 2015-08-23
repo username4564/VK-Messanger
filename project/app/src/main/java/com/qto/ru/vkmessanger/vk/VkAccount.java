@@ -71,6 +71,20 @@ public class VkAccount {
     }
 
     /**
+     * Возвращает флаг инициализации аккаунта
+     * @return
+     * Флаг инициализации аккаунта
+     */
+    public boolean isActive(){
+        if (mToken != null && mUid != null){
+            if (!mToken.equals("") && !mUid.equals("")){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
      * Сбрасывает информацию о пользователе
      * и записывает ее в локальном хранилище
      * приложения

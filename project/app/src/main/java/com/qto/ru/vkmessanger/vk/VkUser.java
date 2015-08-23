@@ -1,24 +1,19 @@
 package com.qto.ru.vkmessanger.vk;
 
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
+import org.json.JSONException;
+import org.json.JSONObject;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
+import java.io.Serializable;
 import java.util.Calendar;
 
 /**
  * Используется для хранения информации о пользователе
  */
-public class VkUser implements Comparable {
+public class VkUser implements Comparable, Serializable {
     /** Имя пользователя */
     private String mFirstName;
     /** Фамилия пользователя */
     private String mLastName;
-    /** Фото пользователя */
-    private Bitmap mPhoto50;
     /** Ссылка к фото пользователя */
     private String mPhoto50Source;
     /** Флаг информирующий о том, что пользователь в сети */
@@ -50,6 +45,20 @@ public class VkUser implements Comparable {
         mOnline = online;
         mUid = uid;
     }
+    /**
+     * Создает объект пользователя на основе Json объекта
+     * @param object
+     * Json объект
+     * @throws JSONException
+     * Ошибка работы с Json объектом
+     */
+    public VkUser(JSONObject object) throws JSONException {
+        mFirstName = object.getString("first_name");
+        mLastName = object.getString("last_name");
+        mPhoto50Source = object.getString("photo_100");
+        mOnline = object.getInt("online");
+        mUid = object.getLong("uid");
+    }
 
     @Override
     public String toString() {
@@ -59,23 +68,6 @@ public class VkUser implements Comparable {
     @Override
     public int compareTo(Object o) {
         return mFirstName.compareTo(o.toString());
-    }
-
-    /**
-     * Загружает фото пользователя по ссылке <code>mPhoto50Source</code>
-     */
-    public void loadPhoto(){
-        try {
-            URL url = new URL(mPhoto50Source);
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-            connection.setDoInput(true);
-            connection.connect();
-            InputStream input = connection.getInputStream();
-            Bitmap myBitmap = BitmapFactory.decodeStream(input);
-            mPhoto50 = myBitmap;
-        } catch (IOException e) {
-            mPhoto50 = null;
-        }
     }
 
     /**
@@ -130,24 +122,6 @@ public class VkUser implements Comparable {
      */
     public void setOnline(int online) {
         mOnline = online;
-    }
-
-    /**
-     * Возвращает фото пользователя
-     * @return
-     * Фото пользователя
-     */
-    public Bitmap getPhoto50() {
-        return mPhoto50;
-    }
-
-    /**
-     * Устанавливает фото пользователя
-     * @param photo50
-     * Фото пользователя
-     */
-    public void setPhoto50(Bitmap photo50) {
-        mPhoto50 = photo50;
     }
 
     /**

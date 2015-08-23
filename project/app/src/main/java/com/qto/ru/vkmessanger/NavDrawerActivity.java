@@ -1,64 +1,89 @@
 package com.qto.ru.vkmessanger;
 
 import android.app.Activity;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.view.Menu;
-import android.view.MenuItem;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
+import android.view.View;
 
+import com.qto.ru.vkmessanger.drawer.DrawerItem;
+import com.qto.ru.vkmessanger.drawer.DrawerListAdapter;
+import com.qto.ru.vkmessanger.drawer.NavigationDrawerFragment;
 import com.qto.ru.vkmessanger.fragments.AllFriendsFragment;
 import com.qto.ru.vkmessanger.fragments.DialogsFragment;
-import com.qto.ru.vkmessanger.fragments.NavigationDrawerFragment;
 import com.qto.ru.vkmessanger.fragments.OnlineFriendsFragment;
+import com.qto.ru.vkmessanger.fragments.SettingsFragment;
+import com.qto.ru.vkmessanger.services.PollingService;
 import com.qto.ru.vkmessanger.vk.VkAccount;
+import com.qto.ru.vkmessanger.vk.VkRest;
+import com.qto.ru.vkmessanger.vk.VkUser;
 
-/**
- * Используется для отображения главного окна с
- * выплывающим меню
- */
-public class NavDrawerActivity extends AppCompatActivity
-        implements NavigationDrawerFragment.NavigationDrawerCallbacks {
+import java.util.List;
 
-    private NavigationDrawerFragment mNavigationDrawerFragment;
+
+public class NavDrawerActivity extends AppCompatActivity implements DrawerListAdapter.OnItemSelectedListener {
+    private RecyclerView mDrawerList;
+    private NavigationDrawerFragment mDrawerFragment;
 
     private CharSequence mTitle;
-    /**
-     * Константа с кодом для результата авторизации
-     */
-    private static final int AUTH_CODE = 1;
+
+    private List<DrawerItem> mItemList;
+    private DrawerListAdapter mItemListAdapter;
+
+    private Thread mUpdateThread;
+    private VkUser mUser;
+
+    private static final int RESULT_AUTH_CODE = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_nav_drawer);
+        setContentView(R.layout.activity_main);
 
-        mNavigationDrawerFragment = (NavigationDrawerFragment)
-                getSupportFragmentManager().findFragmentById(R.id.navigation_drawer);
-        mTitle = getString(R.string.title_section1);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
 
-        mNavigationDrawerFragment.setUp(
-                R.id.navigation_drawer,
-                (DrawerLayout) findViewById(R.id.drawer_layout));
+        mDrawerFragment = (NavigationDrawerFragment)
+                getSupportFragmentManager().findFragmentById(R.id.fragment_navigation_drawer);
+        mDrawerFragment.setUp(R.id.fragment_navigation_drawer,
+                (DrawerLayout) findViewById(R.id.drawer_layout), toolbar);
+
+        mDrawerList = (RecyclerView)findViewById(R.id.drawerList);
+        mItemList = mDrawerFragment.getMenu();
+        mItemListAdapter = new DrawerListAdapter(mItemList, this);
+        mDrawerList.setAdapter(mItemListAdapter);
+        mDrawerList.setHasFixedSize(true);
+        mDrawerList.setLayoutManager(new LinearLayoutManager(this));
+        mItemListAdapter.setOnItemSelectedListener(this);
 
         VkAccount account = VkAccount.getInstance();
         account.restore(this);
 
         if (account.getToken() == null && account.getUid() == null) {
-            startActivityForResult(new Intent(this, AuthActivity.class), AUTH_CODE);
+            startActivityForResult(new Intent(this, AuthActivity.class), RESULT_AUTH_CODE);
         }
+
+        onItemSelected(null, 1);
+
+
+        Intent intent = new Intent(this, PollingService.class);
+        startService(intent);
+
+        updateItemList(true);
     }
 
     @Override
-    public void onNavigationDrawerItemSelected(int position) {
-        onSectionAttached(position + 1);
-
-        Fragment fragment = new Fragment();
-        switch (position + 1){
+    public void onItemSelected(View view, int position) {
+        Fragment fragment = null;
+        switch (position){
             case 1:
                 fragment = new DialogsFragment();
                 break;
@@ -68,12 +93,24 @@ public class NavDrawerActivity extends AppCompatActivity
             case 3:
                 fragment = new AllFriendsFragment();
                 break;
+            case 5:
+                fragment = new SettingsFragment();
+                Bundle bundle = new Bundle();
+                bundle.putSerializable("user", mUser);
+                fragment.setArguments(bundle);
+                break;
         }
 
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        fragmentManager.beginTransaction()
-                .replace(R.id.container, fragment)
-                .commit();
+        if (fragment != null) {
+            onSectionAttached(position);
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.container, fragment)
+                    .commit();
+        }
+
+        if (mDrawerFragment != null) {
+            mDrawerFragment.closeDrawer();
+        }
     }
 
     public void onSectionAttached(int number) {
@@ -87,58 +124,25 @@ public class NavDrawerActivity extends AppCompatActivity
             case 3:
                 mTitle = getString(R.string.title_section3);
                 break;
+            case 5:
+                mTitle = getString(R.string.title_settings);
         }
+        getSupportActionBar().setTitle(mTitle);
     }
-
-    public void restoreActionBar() {
-        ActionBar actionBar = getSupportActionBar();
-        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
-        actionBar.setDisplayShowTitleEnabled(true);
-        actionBar.setTitle(mTitle);
-    }
-
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        if (!mNavigationDrawerFragment.isDrawerOpen()) {
-            getMenuInflater().inflate(R.menu.menu_drawer, menu);
-            restoreActionBar();
-            return true;
-        }
-        return super.onCreateOptionsMenu(menu);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-
-        if (id == R.id.action_exit) {
-            VkAccount account = VkAccount.getInstance();
-            account.reset(this);
-
-            android.webkit.CookieManager cookieManager = android.webkit.CookieManager.getInstance();
-            cookieManager.removeAllCookie();
-
-            startActivityForResult(new Intent(this, AuthActivity.class), AUTH_CODE);
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
-
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         switch(requestCode) {
-            case AUTH_CODE:
+            case RESULT_AUTH_CODE:
                 if (resultCode == Activity.RESULT_OK) {
                     VkAccount account = VkAccount.getInstance();
                     account.setToken(data.getStringExtra("token"));
                     account.setUid(data.getStringExtra("uid"));
                     account.save(this);
 
-                    mNavigationDrawerFragment.selectItem(0);
+                    onItemSelected(null, 1);
+                    updateItemList(true);
                 }
                 if (resultCode == Activity.RESULT_CANCELED){
                     finish();
@@ -146,5 +150,78 @@ public class NavDrawerActivity extends AppCompatActivity
                 break;
         }
     }
+
+    @Override
+    public void onBackPressed() {
+        if (mDrawerFragment.drawerOpened()){
+            mDrawerFragment.closeDrawer();
+        } else {
+            super.onBackPressed();
+        }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        registerReceiver(mBroadcastReceiver, new IntentFilter(PollingService.ACTION_COUNTER_CHANGED));
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        unregisterReceiver(mBroadcastReceiver);
+        stopService(new Intent(this, PollingService.class));
+    }
+
+    public void resetAuth(){
+        VkAccount account = VkAccount.getInstance();
+        account.reset(this);
+
+        android.webkit.CookieManager cookieManager = android.webkit.CookieManager.getInstance();
+        cookieManager.removeAllCookie();
+
+        startActivityForResult(new Intent(this, AuthActivity.class), RESULT_AUTH_CODE);
+    }
+
+    private void updateItemList(final boolean all){
+        if (mUpdateThread == null || !mUpdateThread.isAlive()) {
+            mUpdateThread = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    VkAccount account = VkAccount.getInstance();
+
+                    if (account != null && account.isActive()) {
+                        VkRest rest = VkRest.getInstance();
+
+                        if (all) {
+                            mUser = rest.getUserById(Long.parseLong(VkAccount.getInstance().getUid()));
+                            if (mUser != null) {
+                                DrawerItem header = mItemList.get(0);
+                                header.setPath(mUser.getPhoto50Source());
+                                header.setName(mUser.getFullName());
+                                mItemListAdapter.notifyItemChanged(0);
+                            }
+                        }
+
+                        int unreadCount = rest.getUnreadCount();
+                        DrawerItem dialogs = mItemList.get(1);
+                        String info = unreadCount == 0 ? "" : "+" + unreadCount;
+                        dialogs.setInfo(info);
+
+                        mItemListAdapter.notifyItemChanged(1);
+                    }
+                }
+            });
+            mUpdateThread.start();
+        }
+    }
+
+    private BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            updateItemList(false);
+        }
+    };
 
 }

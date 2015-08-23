@@ -3,13 +3,12 @@ package com.qto.ru.vkmessanger.vk;
 
 import android.os.AsyncTask;
 
+import com.qto.ru.vkmessanger.util.ResponseUtils;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,24 +38,24 @@ public class VkRest {
     private static final String GET_MESSAGE_HISTORY = "4";
     /** Константа отправки сообщения */
     private static final String SEND_MESSAGE = "5";
+    /** Константа получения количества непрочитанных сообщений */
+    private static final String GET_UNREAD_COUNT = "6";
+    /** Константа получения информации о LongPoll сервере */
+    private static final String GET_LONG_POLL = "7";
 
     /** Объект работы с REST API */
     private static VkRest sSingletone;
     /** Объект осуществляющий обработку запросов к REST API */
-    private API mService;
-    /** Объект конвертирования Json объектов */
-    private VkConvert mConvert;
+    private IResponse mService;
 
     /**
      * Конструктор объекта работы с REST API
      */
     private VkRest(){
-        RestAdapter restAdapter = new RestAdapter.Builder()
+        mService = new RestAdapter.Builder()
                 .setEndpoint(END_POINT)
-                .build();
-        mService = restAdapter.create(API.class);
-
-        mConvert = new VkConvert();
+                .build()
+                .create(IResponse.class);
     }
 
     /**
@@ -87,7 +86,7 @@ public class VkRest {
             JSONArray userInfo = object.getJSONArray(RESPONSE_OBJECT);
 
             for (int i = 0; i < userInfo.length(); i++) {
-                VkUser user = mConvert.convertUser(userInfo.getJSONObject(i));
+                VkUser user = new VkUser(userInfo.getJSONObject(i));
                 user.setSex(userInfo.getJSONObject(i).getInt("sex"));
                 if (userInfo.optJSONObject(i).has("bdate")) {
                     user.setAge(userInfo.getJSONObject(i).getString("bdate"));
@@ -125,13 +124,15 @@ public class VkRest {
                 }
             }
 
-            json = invokeResponse(GET_USERS_BY_ID, usersIds, token);
+            if (!usersIds.equals("")) {
+                json = invokeResponse(GET_USERS_BY_ID, usersIds, token);
 
-            object = new JSONObject(json);
-            JSONArray userInfo = object.getJSONArray(RESPONSE_OBJECT);
+                object = new JSONObject(json);
+                JSONArray userInfo = object.getJSONArray(RESPONSE_OBJECT);
 
-            for (int i = 0; i < userInfo.length(); i++) {
-                userList.add(mConvert.convertUser(userInfo.getJSONObject(i)));
+                for (int i = 0; i < userInfo.length(); i++) {
+                    userList.add(new VkUser(userInfo.getJSONObject(i)));
+                }
             }
         } catch (JSONException e) {
             e.printStackTrace();
@@ -158,15 +159,13 @@ public class VkRest {
             JSONArray friendsIds = object.getJSONArray(RESPONSE_OBJECT);
             String usersIds = "";
 
-            long dialogCount = friendsIds.getLong(0);
             for (int i = 1; i < friendsIds.length(); i++) {
                 usersIds += friendsIds.getJSONObject(i).getString("uid");
                 if (i != friendsIds.length()){
                     usersIds += ",";
                 }
 
-                VkDialog dialog = new VkDialog(
-                        mConvert.convertMessage(friendsIds.getJSONObject(i)));
+                VkDialog dialog = new VkDialog(new VkMessage(friendsIds.getJSONObject(i)));
                 dialogList.add(dialog);
             }
 
@@ -175,9 +174,15 @@ public class VkRest {
 
                 object = new JSONObject(json);
                 JSONArray userInfo = object.getJSONArray(RESPONSE_OBJECT);
+                String usersIdsArray[] = usersIds.split(",");
 
                 for (int i = 0; i < userInfo.length(); i++) {
-                    dialogList.get(i).setUser(mConvert.convertUser(userInfo.getJSONObject(i)));
+                    VkUser user = new VkUser(userInfo.getJSONObject(i));
+                    for (int j = 0; j < dialogList.size(); j++) {
+                        if (usersIdsArray[j].equals(String.valueOf(user.getUid()))) {
+                            dialogList.get(j).setUser(user);
+                        }
+                    }
                 }
             }
         } catch (JSONException e) {
@@ -194,18 +199,19 @@ public class VkRest {
      * @return
      * Список сообщений
      */
-    public List<VkMessage> getMessageHistory(long id){
-        List<VkMessage> messageList = new ArrayList<>(40);
+    public List<VkMessage> getMessageHistory(long id, int count){
+        List<VkMessage> messageList = new ArrayList<>(count);
 
         try {
             String token = VkAccount.getInstance().getToken();
-            String json = invokeResponse(GET_MESSAGE_HISTORY, String.valueOf(id), token);
+            String json = invokeResponse(GET_MESSAGE_HISTORY, String.valueOf(id),
+                    String.valueOf(count), token);
 
             JSONObject object = new JSONObject(json);
             JSONArray messageInfo = object.getJSONArray(RESPONSE_OBJECT);
 
             for (int i = 1; i < messageInfo.length(); i++) {
-                messageList.add(mConvert.convertMessage(messageInfo.getJSONObject(i)));
+                messageList.add(new VkMessage(messageInfo.getJSONObject(i)));
             }
         } catch (JSONException e) {
             e.printStackTrace();
@@ -223,20 +229,91 @@ public class VkRest {
      * @return
      * Флаг отправки сообщения
      */
-    public boolean sendMessage(long id, final String text){
+    public long sendMessage(long id, final String text){
         try {
             String token = VkAccount.getInstance().getToken();
             String json = invokeResponse(SEND_MESSAGE, String.valueOf(id), text, token);
 
             JSONObject object = new JSONObject(json);
 
-            long messageId = object.getLong(RESPONSE_OBJECT);
-            return true;
+            return object.getLong(RESPONSE_OBJECT);
         } catch (JSONException e) {
             e.printStackTrace();
         }
 
-        return false;
+        return -1;
+    }
+
+    /**
+     * Получает информацию об указанном пользователя
+     * @param id
+     * id пользователя
+     * @return
+     * Объект хранящий информацию о пользователе
+     */
+    public VkUser getUserById(long id){
+        try {
+            String token = VkAccount.getInstance().getToken();
+            String json = invokeResponse(GET_USERS_BY_ID, String.valueOf(id), token);
+
+            JSONObject object = new JSONObject(json);
+
+            return new VkUser(object.getJSONArray(RESPONSE_OBJECT).getJSONObject(0));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+    /**
+     * Получает количество непрочитанных сообщений
+     * @return
+     * Количество непрочитанных сообщений
+     */
+    public int getUnreadCount(){
+        try {
+            String token = VkAccount.getInstance().getToken();
+            String json = invokeResponse(GET_UNREAD_COUNT, token);
+
+            JSONObject object = new JSONObject(json);
+
+            return object.getJSONObject(RESPONSE_OBJECT).getInt("count");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        return 0;
+    }
+
+    /**
+     * Получает информацию о LongPoll сервере
+     * @return
+     * Строки с информацией о сервере LongPoll
+     * 0 - ключ, 1 - сервер, 2 - номер последнего события
+     */
+    public String[] getLongPoll(){
+        try {
+            String token = VkAccount.getInstance().getToken();
+            String json = invokeResponse(GET_LONG_POLL, token);
+
+            JSONObject object = new JSONObject(json);
+
+            String key = object.getJSONObject(RESPONSE_OBJECT).getString("key");
+            String server = object.getJSONObject(RESPONSE_OBJECT).getString("server");
+            String ts = object.getJSONObject(RESPONSE_OBJECT).getString("ts");
+
+            String longPoll[] = new String[3];
+            longPoll[0] = key;
+            longPoll[1] = server;
+            longPoll[2] = ts;
+
+            return longPoll;
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        return null;
     }
 
     /**
@@ -263,71 +340,45 @@ public class VkRest {
     private class ResponseAsyncTask extends AsyncTask<String, Void, String> {
         /**
          * Выполняет запрос к REST API
-         * @param strings
-         * Параметры запроса
-         * @return
-         * Json строка
+         *
+         * @param strings Параметры запроса
+         * @return Json строка
          */
         @Override
         protected String doInBackground(String... strings) {
             Response response = null;
 
-            if (strings[0].equals(GET_ALL_FRIENDS)){
-                response = mService.getAllUsers(strings[1]);
-                return stringFromResponse(response);
-            } else
-            if (strings[0].equals(GET_ONLINE_FRIENDS)){
-                response = mService.getOnlineUsersIds(strings[1], strings[2]);
-            } else
-            if (strings[0].equals(GET_USERS_BY_ID)){
-                response = mService.getUsersByIds(strings[1], strings[2]);
-            } else
-            if (strings[0].equals(GET_DIALOGS)){
-                response = mService.getDialogs(strings[1], strings[2]);
-            } else
-            if (strings[0].equals(GET_MESSAGE_HISTORY)){
-                response = mService.getMessageHistory(strings[1], strings[2]);
-            } else
-            if (strings[0].equals(SEND_MESSAGE)){
-                response = mService.sendMessage(strings[1], strings[2], strings[3]);
-            }
-            return stringFromResponse(response);
-        }
-
-        /**
-         * Возвращает Json строку полученную из результата запроса
-         * @param response
-         * Объект запроса к REST API
-         * @return
-         * Json строка
-         */
-        protected String stringFromResponse(Response response){
-            StringBuilder sb = new StringBuilder();
-
             try {
-                BufferedReader reader = new BufferedReader(new InputStreamReader(
-                        response.getBody().in()));
-                String line;
-                try {
-                    while ((line = reader.readLine()) != null) {
-                        sb.append(line);
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
+                if (GET_ALL_FRIENDS.equals(strings[0])) {
+                    response = mService.getAllUsers(strings[1]);
+                    return ResponseUtils.stringFromResponse(response);
+                } else if (GET_ONLINE_FRIENDS.equals(strings[0])) {
+                    response = mService.getOnlineUsersIds(strings[1], strings[2]);
+                } else if (GET_USERS_BY_ID.equals(strings[0])) {
+                    response = mService.getUsersByIds(strings[1], strings[2]);
+                } else if (GET_DIALOGS.equals(strings[0])) {
+                    response = mService.getDialogs(strings[1], strings[2]);
+                } else if (GET_MESSAGE_HISTORY.equals(strings[0])) {
+                    response = mService.getMessageHistory(strings[1], strings[2], strings[3]);
+                } else if (SEND_MESSAGE.equals(strings[0])) {
+                    response = mService.sendMessage(strings[1], strings[2], strings[3]);
+                } else if (GET_UNREAD_COUNT.equals(strings[0])) {
+                    response = mService.getUnreadCount(strings[1]);
+                } else if (GET_LONG_POLL.equals(strings[0])) {
+                    response = mService.getLongPoll(strings[1]);
                 }
-
-            } catch (IOException e) {
-                e.printStackTrace();
+                //Log.d("XX", "Response: " + response.getUrl());
+            } catch (Exception e) {
             }
 
-            return sb.toString();
+            return ResponseUtils.stringFromResponse(response);
         }
     }
 
     /**
      * Используется для запросов к REST API
      */
-    private interface API {
+    private interface IResponse {
         /**
          * Возвращает объект запроса к REST API получающий
          * список всех пользователей
@@ -336,8 +387,8 @@ public class VkRest {
          * @return
          * Объект запроса к REST API
          */
-        @POST("/friends.get?user_id=[user_id]&order=name&count&fields=first_name,last_name," +
-                "photo_50,online,sex,bdate&name_case=nom")
+        @POST("/friends.get?order=name&count&fields=first_name,last_name," +
+                "photo_100,online,sex,bdate&name_case=nom")
         Response getAllUsers(@Query("user_id") String user);
 
         /**
@@ -350,7 +401,7 @@ public class VkRest {
          * @return
          * Объект запроса к REST API
          */
-        @POST("/friends.getOnline?user_id=[user_id]&order=name&access_token=[access_token]")
+        @POST("/friends.getOnline?order=name")
         Response getOnlineUsersIds(@Query("user_id") String user,
                                    @Query("access_token") String token);
 
@@ -364,23 +415,22 @@ public class VkRest {
          * @return
          * Объект запроса к REST API
          */
-        @POST("/users.get?user_ids=[user_ids]&fields=first_name,last_name,photo_50,online" +
-                "&name_case=nom&access_token=[access_token]")
+        @POST("/users.get?fields=first_name,last_name,photo_100,online&name_case=nom")
         Response getUsersByIds(@Query("user_ids") String user,
                                @Query("access_token") String token);
 
         /**
          * Возвращает объект запроса к REST API получающий
          * список диалогов
-         * @param offset
-         * Смещение в списке диалогов
+         * @param count
+         * Количество загружаемых диалогов диалогов
          * @param token
          * Ключ доступа
          * @return
          * Объект запроса к REST API
          */
-        @POST("/messages.getDialogs?offset=[offset]&access_token=[access_token]")
-        Response getDialogs(@Query("offset") String offset,
+        @POST("/messages.getDialogs")
+        Response getDialogs(@Query("count") String count,
                             @Query("access_token") String token);
 
         /**
@@ -388,13 +438,16 @@ public class VkRest {
          * список сообщений
          * @param user
          * id пользователя
+         * @param count
+         * Количество загружаемых сообщений
          * @param token
          * Ключ доступа
          * @return
          * Объект запроса к REST API
          */
-        @POST("/messages.getHistory?user_id=[user_id]&count=40&access_token=[access_token]")
+        @POST("/messages.getHistory")
         Response getMessageHistory(@Query("user_id") String user,
+                                   @Query("count") String count,
                                    @Query("access_token") String token);
 
         /**
@@ -409,8 +462,30 @@ public class VkRest {
          * @return
          * Объект запроса к REST API
          */
-        @POST("/messages.send?user_id=[user_id]&message=[message]&access_token=[access_token]")
+        @POST("/messages.send")
         Response sendMessage(@Query("user_id") String user, @Query("message") String message,
                              @Query("access_token") String token);
+
+        /**
+         * Возвращает объект запроса к REST API получающий
+         * количество не прочитанных сообщений
+         * @param token
+         * Ключ доступа
+         * @return
+         * Объект запроса к REST API
+         */
+        @POST("/messages.getDialogs?v=5.35&count=0&unread=1")
+        Response getUnreadCount(@Query("access_token") String token);
+
+        /**
+         * Возвращает объект запроса к REST API получающий
+         * информацию о LongPoll сервере
+         * @param token
+         * Ключ доступа
+         * @return
+         * Объект запроса к REST API
+         */
+        @POST("/messages.getLongPollServer")
+        Response getLongPoll(@Query("access_token") String token);
     }
 }

@@ -12,6 +12,7 @@ import android.widget.TextView;
 
 import com.qto.ru.vkmessanger.R;
 import com.qto.ru.vkmessanger.vk.VkUser;
+import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
@@ -64,11 +65,9 @@ public class VkUserAdapter extends ArrayAdapter<VkUser> {
 
         holder.name.setText(user.getFullName());
 
-        if (user.getPhoto50() == null){
-            holder.photo.setImageDrawable(resources.getDrawable(R.drawable.camera_100));
-        } else {
-            holder.photo.setImageBitmap(user.getPhoto50());
-        }
+        Picasso.with(parent.getContext())
+                .load(user.getPhoto50Source())
+                .into(holder.photo);
 
         if (user.getOnline() == 1){
             holder.online.setBackgroundColor(resources.getColor(R.color.onlineStatus));

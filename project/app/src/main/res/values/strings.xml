@@ -11,6 +11,7 @@
     <string name="title_section1">Сообщения</string>
     <string name="title_section2">В сети</string>
     <string name="title_section3">Все друзья</string>
+    <string name="title_settings">Настройки</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
@@ -27,4 +28,7 @@
     <string name="text_age">Возраст</string>
     <string name="text_age_from">От</string>
     <string name="text_age_to">До</string>
+
+<!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

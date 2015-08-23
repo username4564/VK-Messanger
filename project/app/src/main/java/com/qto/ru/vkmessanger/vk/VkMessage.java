@@ -1,5 +1,8 @@
 package com.qto.ru.vkmessanger.vk;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 /**
  * Используется для хранения информации о сообщении
  */
@@ -29,6 +32,19 @@ public class VkMessage {
         mRead = read;
         mDate = date;
         mOut = out;
+    }
+    /**
+     * Создает объект сообщения на основе Json объекта
+     * @param object
+     * Json объект
+     * @throws JSONException
+     * Ошибка работы с Json объектом
+     */
+    public VkMessage(JSONObject object) throws JSONException {
+        mBody = object.getString("body");
+        mRead = object.getLong("read_state");
+        mDate = object.getLong("date");
+        mOut = object.getLong("out");
     }
 
     /**

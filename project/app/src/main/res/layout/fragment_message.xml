@@ -1,0 +1,50 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.qto.ru.vkmessanger.MessageActivity"
+    android:background="@color/messageBackground">
+
+    <ListView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/items"
+        android:choiceMode="none"
+        android:drawSelectorOnTop="true"
+        android:divider="@android:color/transparent"
+        android:layout_above="@+id/linearLayout" />
+
+    <ProgressBar
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/progress"
+        android:layout_gravity="center"
+        android:indeterminate="false"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true" />
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:layout_alignParentBottom="true"
+        android:layout_alignLeft="@+id/items"
+        android:id="@+id/linearLayout">
+
+        <EditText
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/text"
+            android:layout_weight="1"
+            android:layout_gravity="center_vertical" />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/button_send"
+            android:id="@+id/send"
+            android:layout_weight="0"
+            android:layout_gravity="center_vertical" />
+    </LinearLayout>
+
+</RelativeLayout>

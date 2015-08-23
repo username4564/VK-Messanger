@@ -13,6 +13,7 @@ import android.widget.TextView;
 
 import com.qto.ru.vkmessanger.R;
 import com.qto.ru.vkmessanger.vk.VkDialog;
+import com.squareup.picasso.Picasso;
 
 import java.util.Calendar;
 import java.util.List;
@@ -54,13 +55,14 @@ public class VkDialogAdapter extends ArrayAdapter<VkDialog> {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         VkDialog dialog = mItemList.get(position);
+
         Resources resources = mContext.getResources();
 
         ViewHolder holder;
 
         if (convertView == null) {
             LayoutInflater inflater = mContext.getLayoutInflater();
-            convertView = inflater.inflate(R.layout.item_dialog, null, true);
+            convertView = inflater.inflate(R.layout.item_dialog, null);
             holder = new ViewHolder();
             holder.name = (TextView)convertView.findViewById(R.id.name);
             holder.photo = (ImageView)convertView.findViewById(R.id.photo);
@@ -76,11 +78,9 @@ public class VkDialogAdapter extends ArrayAdapter<VkDialog> {
 
         holder.name.setText(dialog.getUser().getFullName());
 
-        if (dialog.getUser().getPhoto50() == null) {
-            holder.photo.setImageDrawable(resources.getDrawable(R.drawable.camera_100));
-        } else {
-            holder.photo.setImageBitmap(dialog.getUser().getPhoto50());
-        }
+        Picasso.with(parent.getContext())
+                .load(dialog.getUser().getPhoto50Source())
+                .into(holder.photo);
 
         holder.text.setText(dialog.getMessage().getBody());
 
@@ -95,9 +95,15 @@ public class VkDialogAdapter extends ArrayAdapter<VkDialog> {
             holder.out.setText("");
         }
 
-        if (dialog.getMessage().getRead() == 0) {
+        if (dialog.getMessage().getRead() == 0 && dialog.getMessage().getOut() == 0) {
             convertView.setBackgroundColor(resources.getColor(R.color.messageNoRead));
+        } else
+        if (dialog.getMessage().getRead() == 0 && dialog.getMessage().getOut() == 1) {
+            holder.text.setBackgroundColor(resources.getColor(R.color.messageNoRead));
+            holder.out.setBackgroundColor(resources.getColor(R.color.messageNoRead));
         } else {
+            holder.text.setBackgroundDrawable(null);
+            holder.out.setBackgroundDrawable(null);
             convertView.setBackgroundDrawable(null);
         }
 
