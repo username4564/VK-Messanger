@@ -25,7 +25,7 @@ import java.util.List;
 /**
  * Используется для отображения списка всех друзей
  */
-public class AllFriendsFragment extends AbstractFragment<VkUser> implements View.OnClickListener,
+public class AllFriendsFragment extends BaseListFragment<VkUser> implements View.OnClickListener,
         SearchView.OnQueryTextListener {
 
     /** Строка поиска */
@@ -55,10 +55,7 @@ public class AllFriendsFragment extends AbstractFragment<VkUser> implements View
                              Bundle savedInstanceState) {
         View view = createView(inflater, container, R.layout.fragment_all_friends);
 
-        mSearchString = "";
         mSearchSex = FilterDialog.SEX_ALL;
-        mSearchAgeFrom = 0;
-        mSearchAgeTo = 0;
 
         mSearch = (SearchView)view.findViewById(R.id.search);
         mFilter = (ImageButton)view.findViewById(R.id.filter);
@@ -69,7 +66,7 @@ public class AllFriendsFragment extends AbstractFragment<VkUser> implements View
 
 
         mAllUserList = new ArrayList<>();
-        mListAdapter = new VkUserAdapter(getActivity(), R.layout.item_user, mItemList);
+        mListAdapter = new VkUserAdapter(mItemList);
         mItemListView.setAdapter(mListAdapter);
 
         mSearchStart = false;
@@ -140,7 +137,8 @@ public class AllFriendsFragment extends AbstractFragment<VkUser> implements View
         mItemList.clear();
 
         for (VkUser user : mAllUserList){
-            if (user.getFullName().toLowerCase().contains(mSearchString.toLowerCase())){
+            if (mSearchString == null ||
+                    user.getFullName().toLowerCase().contains(mSearchString.toLowerCase())){
                 mItemList.add(user);
             }
         }

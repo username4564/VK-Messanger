@@ -17,7 +17,7 @@ public class VkUser implements Comparable, Serializable {
     /** Ссылка к фото пользователя */
     private String mPhoto50Source;
     /** Флаг информирующий о том, что пользователь в сети */
-    private int mOnline;
+    private boolean mOnline;
     /** id пользователя */
     private long mUid;
     /** Возраст пользователя */
@@ -38,7 +38,7 @@ public class VkUser implements Comparable, Serializable {
      * @param uid
      * id пользователя
      */
-    public VkUser(String firstName, String lastName, String photo100Source, int online, long uid){
+    public VkUser(String firstName, String lastName, String photo100Source, boolean online, long uid){
         mFirstName = firstName;
         mLastName = lastName;
         mPhoto50Source = photo100Source;
@@ -56,7 +56,7 @@ public class VkUser implements Comparable, Serializable {
         mFirstName = object.getString("first_name");
         mLastName = object.getString("last_name");
         mPhoto50Source = object.getString("photo_100");
-        mOnline = object.getInt("online");
+        mOnline = object.getInt("online") != 0;
         mUid = object.getLong("uid");
     }
 
@@ -111,7 +111,7 @@ public class VkUser implements Comparable, Serializable {
      * @return
      * Флаг информирующий о том, что пользователь в сети
      */
-    public int getOnline() {
+    public boolean getOnline() {
         return mOnline;
     }
 
@@ -120,7 +120,7 @@ public class VkUser implements Comparable, Serializable {
      * @param online
      * Флаг информирующий о том, что пользователь в сети
      */
-    public void setOnline(int online) {
+    public void setOnline(boolean online) {
         mOnline = online;
     }
 

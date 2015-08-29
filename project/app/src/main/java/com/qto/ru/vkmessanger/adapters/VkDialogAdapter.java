@@ -1,12 +1,11 @@
 package com.qto.ru.vkmessanger.adapters;
 
-import android.app.Activity;
 import android.content.res.Resources;
 import android.text.format.DateFormat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
+import android.widget.BaseAdapter;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -21,16 +20,13 @@ import java.util.List;
 /**
  * Используется для отображения списка диалогов
  */
-public class VkDialogAdapter extends ArrayAdapter<VkDialog> {
-    /** Контекст приложения */
-    private final Activity mContext;
+public class VkDialogAdapter extends BaseAdapter {
+
     /** Список диалогов */
     private final List<VkDialog> mItemList;
 
-    public VkDialogAdapter(Activity context, int id, List<VkDialog> names) {
-        super(context, id, names);
-        mContext = context;
-        mItemList = names;
+    public VkDialogAdapter(List<VkDialog> itemList) {
+        mItemList = itemList;
     }
 
     /**
@@ -53,15 +49,30 @@ public class VkDialogAdapter extends ArrayAdapter<VkDialog> {
     }
 
     @Override
+    public int getCount() {
+        return mItemList.size();
+    }
+
+    @Override
+    public Object getItem(int position) {
+        return mItemList.get(position);
+    }
+
+    @Override
+    public long getItemId(int position) {
+        return mItemList.get(position).getUser().getUid();
+    }
+
+    @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         VkDialog dialog = mItemList.get(position);
 
-        Resources resources = mContext.getResources();
+        Resources resources = parent.getResources();
 
         ViewHolder holder;
 
         if (convertView == null) {
-            LayoutInflater inflater = mContext.getLayoutInflater();
+            LayoutInflater inflater = LayoutInflater.from(parent.getContext());
             convertView = inflater.inflate(R.layout.item_dialog, null);
             holder = new ViewHolder();
             holder.name = (TextView)convertView.findViewById(R.id.name);
@@ -89,16 +100,16 @@ public class VkDialogAdapter extends ArrayAdapter<VkDialog> {
         String date = DateFormat.format("dd-MM-yyyy HH:mm", calendar).toString();
         holder.date.setText(date);
 
-        if (dialog.getMessage().getOut() == 1) {
+        if (dialog.getMessage().getOut()) {
             holder.out.setText(">>  ");
         } else {
             holder.out.setText("");
         }
 
-        if (dialog.getMessage().getRead() == 0 && dialog.getMessage().getOut() == 0) {
+        if (!dialog.getMessage().getRead() && !dialog.getMessage().getOut()) {
             convertView.setBackgroundColor(resources.getColor(R.color.messageNoRead));
         } else
-        if (dialog.getMessage().getRead() == 0 && dialog.getMessage().getOut() == 1) {
+        if (!dialog.getMessage().getRead() && dialog.getMessage().getOut()) {
             holder.text.setBackgroundColor(resources.getColor(R.color.messageNoRead));
             holder.out.setBackgroundColor(resources.getColor(R.color.messageNoRead));
         } else {
@@ -107,7 +118,7 @@ public class VkDialogAdapter extends ArrayAdapter<VkDialog> {
             convertView.setBackgroundDrawable(null);
         }
 
-        if (dialog.getUser().getOnline() == 1) {
+        if (dialog.getUser().getOnline()) {
             holder.online.setBackgroundColor(resources.getColor(R.color.onlineStatus));
         } else {
             holder.online.setBackgroundDrawable(null);

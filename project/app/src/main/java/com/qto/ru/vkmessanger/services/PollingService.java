@@ -113,29 +113,31 @@ public class PollingService extends IntentService {
                                 int type = param.getInt(0);
                                 Log.d(TAG, "Poll - type: " + type);
 
-                                if (POLL_MESSAGE_ADD == type){
-                                    broadcast = new Intent(ACTION_MESSAGE_ADD)
-                                            .putExtra(EXTRA_USER_ID, param.getInt(3));
-                                } else
-                                if (POLL_MESSAGE_READ == type){
-                                    broadcast = new Intent(ACTION_MESSAGE_READ)
-                                            .putExtra(EXTRA_USER_ID, param.getInt(1));
-                                } else
-                                if (POLL_MESSAGE_READ_OUT == type){
-                                    broadcast = new Intent(ACTION_MESSAGE_READ_OUT)
-                                            .putExtra(EXTRA_USER_ID, param.getInt(1));
-                                } else
-                                if (POLL_USER_ONLINE == type){
-                                    broadcast = new Intent(ACTION_USER_ONLINE)
-                                            .putExtra(EXTRA_USER_ID, param.getInt(1));
-                                } else
-                                if (POLL_USER_OFFLINE == type){
-                                    broadcast = new Intent(ACTION_USER_OFFLINE)
-                                            .putExtra(EXTRA_USER_ID, param.getInt(1));
-                                } else
-                                if (POLL_COUNTER_CHANGED == type){
-                                    broadcast = new Intent(ACTION_COUNTER_CHANGED)
-                                            .putExtra(EXTRA_COUNTER, param.getInt(1));
+                                switch (type){
+                                    case POLL_MESSAGE_ADD:
+                                        broadcast = new Intent(ACTION_MESSAGE_ADD)
+                                                .putExtra(EXTRA_USER_ID, param.getInt(3));
+                                        break;
+                                    case POLL_MESSAGE_READ:
+                                        broadcast = new Intent(ACTION_MESSAGE_READ)
+                                                .putExtra(EXTRA_USER_ID, param.getInt(1));
+                                        break;
+                                    case POLL_MESSAGE_READ_OUT:
+                                        broadcast = new Intent(ACTION_MESSAGE_READ_OUT)
+                                                .putExtra(EXTRA_USER_ID, param.getInt(1));
+                                        break;
+                                    case POLL_USER_ONLINE:
+                                        broadcast = new Intent(ACTION_USER_ONLINE)
+                                                .putExtra(EXTRA_USER_ID, param.getInt(1));
+                                        break;
+                                    case POLL_USER_OFFLINE:
+                                        broadcast = new Intent(ACTION_USER_OFFLINE)
+                                                .putExtra(EXTRA_USER_ID, param.getInt(1));
+                                        break;
+                                    case POLL_COUNTER_CHANGED:
+                                        broadcast = new Intent(ACTION_COUNTER_CHANGED)
+                                                .putExtra(EXTRA_COUNTER, param.getInt(1));
+                                        break;
                                 }
 
                                 if (broadcast != null){

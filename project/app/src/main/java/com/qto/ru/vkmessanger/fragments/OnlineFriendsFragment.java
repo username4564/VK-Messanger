@@ -13,14 +13,13 @@ import android.widget.AdapterView;
 import com.qto.ru.vkmessanger.R;
 import com.qto.ru.vkmessanger.adapters.VkUserAdapter;
 import com.qto.ru.vkmessanger.services.PollingService;
-import com.qto.ru.vkmessanger.vk.VkAccount;
 import com.qto.ru.vkmessanger.vk.VkUser;
 
 import java.util.Collections;
 import java.util.List;
 
 
-public class OnlineFriendsFragment extends AbstractFragment<VkUser> {
+public class OnlineFriendsFragment extends BaseListFragment<VkUser> {
 
 
     public OnlineFriendsFragment() {}
@@ -31,7 +30,7 @@ public class OnlineFriendsFragment extends AbstractFragment<VkUser> {
                              Bundle savedInstanceState) {
         View view = createView(inflater, container, R.layout.fragment_friends);
 
-        mListAdapter = new VkUserAdapter(getActivity(), R.layout.item_user, mItemList);
+        mListAdapter = new VkUserAdapter(mItemList);
         mItemListView.setAdapter(mListAdapter);
 
         IntentFilter intentFilter = new IntentFilter();
@@ -42,14 +41,6 @@ public class OnlineFriendsFragment extends AbstractFragment<VkUser> {
         mUpdateAuto = false;
 
         return view;
-    }
-
-    @Override
-    protected void update() {
-        if (VkAccount.getInstance().getToken() == null){
-            return;
-        }
-        super.update();
     }
 
     @Override

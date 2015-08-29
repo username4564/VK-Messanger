@@ -14,9 +14,11 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 
-import com.qto.ru.vkmessanger.drawer.DrawerItem;
 import com.qto.ru.vkmessanger.drawer.DrawerListAdapter;
 import com.qto.ru.vkmessanger.drawer.NavigationDrawerFragment;
+import com.qto.ru.vkmessanger.drawer.items.HeaderItem;
+import com.qto.ru.vkmessanger.drawer.IDrawerListItem;
+import com.qto.ru.vkmessanger.drawer.items.ListItem;
 import com.qto.ru.vkmessanger.fragments.AllFriendsFragment;
 import com.qto.ru.vkmessanger.fragments.DialogsFragment;
 import com.qto.ru.vkmessanger.fragments.OnlineFriendsFragment;
@@ -35,7 +37,7 @@ public class NavDrawerActivity extends AppCompatActivity implements DrawerListAd
 
     private CharSequence mTitle;
 
-    private List<DrawerItem> mItemList;
+    private List<IDrawerListItem> mItemList;
     private DrawerListAdapter mItemListAdapter;
 
     private Thread mUpdateThread;
@@ -58,7 +60,7 @@ public class NavDrawerActivity extends AppCompatActivity implements DrawerListAd
 
         mDrawerList = (RecyclerView)findViewById(R.id.drawerList);
         mItemList = mDrawerFragment.getMenu();
-        mItemListAdapter = new DrawerListAdapter(mItemList, this);
+        mItemListAdapter = new DrawerListAdapter(this, mItemList);
         mDrawerList.setAdapter(mItemListAdapter);
         mDrawerList.setHasFixedSize(true);
         mDrawerList.setLayoutManager(new LinearLayoutManager(this));
@@ -197,19 +199,25 @@ public class NavDrawerActivity extends AppCompatActivity implements DrawerListAd
                         if (all) {
                             mUser = rest.getUserById(Long.parseLong(VkAccount.getInstance().getUid()));
                             if (mUser != null) {
-                                DrawerItem header = mItemList.get(0);
-                                header.setPath(mUser.getPhoto50Source());
-                                header.setName(mUser.getFullName());
-                                mItemListAdapter.notifyItemChanged(0);
+                                HeaderItem headerItem = (HeaderItem)mItemList.get(0);
+                                headerItem.setAvatar(mUser.getPhoto50Source());
+                                headerItem.setName(mUser.getFullName());
+
                             }
                         }
 
                         int unreadCount = rest.getUnreadCount();
-                        DrawerItem dialogs = mItemList.get(1);
+                        ListItem dialogs = (ListItem)mItemList.get(1);
                         String info = unreadCount == 0 ? "" : "+" + unreadCount;
                         dialogs.setInfo(info);
 
-                        mItemListAdapter.notifyItemChanged(1);
+                        mDrawerList.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                mItemListAdapter.notifyDataSetChanged();
+                            }
+                        });
+
                     }
                 }
             });

@@ -17,6 +17,7 @@ import java.net.URLEncoder;
  * Используется для отображения авторизации
  */
 public class AuthActivity extends Activity {
+    private static final String TAG = "AuthActivity";
     /** id приложения зарегистрированного в VK */
     private static final String VK_APP_ID = "4999105";
     /** Ссылка для перенаправления */
@@ -75,8 +76,8 @@ public class AuthActivity extends Activity {
                     intent.putExtra("token", auth[0]);
                     intent.putExtra("uid", auth[1]);
 
-                    Log.d("XX", "token: " + auth[0]);
-                    Log.d("XX", "uid: " + auth[1]);
+                    Log.d(TAG, "token: " + auth[0]);
+                    Log.d(TAG, "uid: " + auth[1]);
 
                     setResult(Activity.RESULT_OK, intent);
                     finish();

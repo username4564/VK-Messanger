@@ -11,12 +11,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
+import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 
 import com.qto.ru.vkmessanger.MessageActivity;
 import com.qto.ru.vkmessanger.R;
+import com.qto.ru.vkmessanger.vk.VkAccount;
 import com.qto.ru.vkmessanger.vk.VkRest;
 import com.qto.ru.vkmessanger.vk.VkUser;
 
@@ -29,15 +30,16 @@ import java.util.List;
  * @param <E>
  * Тип списка
  */
-public abstract class AbstractFragment<E> extends Fragment implements
+public abstract class BaseListFragment<E> extends Fragment implements
         AdapterView.OnItemClickListener {
+
     /** Объект работы с REST API */
     protected VkRest mRest;
 
     /** Список элементов */
     protected ListView mItemListView;
     /** Адаптер для отображения список элементов */
-    protected ArrayAdapter mListAdapter;
+    protected BaseAdapter mListAdapter;
     /** Список информации об элементаъ */
     protected List<E> mItemList;
 
@@ -140,6 +142,9 @@ public abstract class AbstractFragment<E> extends Fragment implements
      * Обновляет информацию списка
      */
     protected void update(){
+        if (VkAccount.getInstance() == null || !VkAccount.getInstance().isActive()){
+            return;
+        }
         if (mUpdateFlag) {
             mUpdateProgress.setVisibility(View.VISIBLE);
         }

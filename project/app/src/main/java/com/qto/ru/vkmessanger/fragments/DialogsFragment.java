@@ -14,7 +14,6 @@ import android.widget.AdapterView;
 import com.qto.ru.vkmessanger.R;
 import com.qto.ru.vkmessanger.adapters.VkDialogAdapter;
 import com.qto.ru.vkmessanger.services.PollingService;
-import com.qto.ru.vkmessanger.vk.VkAccount;
 import com.qto.ru.vkmessanger.vk.VkDialog;
 
 import java.util.ArrayList;
@@ -23,8 +22,7 @@ import java.util.List;
 /**
  * Используется для отображения диалогов пользователя
  */
-public class DialogsFragment extends AbstractFragment<VkDialog> implements AdapterView.OnItemClickListener {
-
+public class DialogsFragment extends BaseListFragment<VkDialog> implements AdapterView.OnItemClickListener {
 
     /** Количество загружаемых диалогов */
     private int mListCount;
@@ -41,7 +39,7 @@ public class DialogsFragment extends AbstractFragment<VkDialog> implements Adapt
         View view = createView(inflater, container, R.layout.fragment_dialogs);
 
         mItemList = new ArrayList<>();
-        mListAdapter = new VkDialogAdapter(getActivity(), R.layout.item_dialog, mItemList);
+        mListAdapter = new VkDialogAdapter(mItemList);
         mItemListView.setAdapter(mListAdapter);
 
         mListCount = 20;
@@ -87,16 +85,6 @@ public class DialogsFragment extends AbstractFragment<VkDialog> implements Adapt
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
         invokeDialog(mItemList.get(i).getUser());
-    }
-
-    /**
-     * Обновляет список диалогов пользователя
-     */
-    protected void update(){
-        if (VkAccount.getInstance().getToken() == null){
-            return;
-        }
-        super.update();
     }
 
     @Override

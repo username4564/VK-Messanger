@@ -1,12 +1,11 @@
 package com.qto.ru.vkmessanger.adapters;
 
-import android.app.Activity;
 import android.content.res.Resources;
 import android.text.format.DateFormat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
+import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 import com.qto.ru.vkmessanger.R;
@@ -18,16 +17,13 @@ import java.util.List;
 /**
  * Используется для отображения списка сообщений
  */
-public class VkMessageAdapter extends ArrayAdapter<VkMessage> {
-    /** Контекст приложения */
-    private final Activity mContext;
+public class VkMessageAdapter extends BaseAdapter {
+
     /** Список сообщений */
     private final List<VkMessage> mItemList;
 
-    public VkMessageAdapter(Activity context, int id, List<VkMessage> names) {
-        super(context, id, names);
-        mContext = context;
-        mItemList = names;
+    public VkMessageAdapter(List<VkMessage> itemList) {
+        mItemList = itemList;
     }
 
     /**
@@ -42,11 +38,26 @@ public class VkMessageAdapter extends ArrayAdapter<VkMessage> {
     }
 
     @Override
+    public int getCount() {
+        return mItemList.size();
+    }
+
+    @Override
+    public Object getItem(int position) {
+        return mItemList.get(position);
+    }
+
+    @Override
+    public long getItemId(int position) {
+        return mItemList.get(position).getDate();
+    }
+
+    @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         VkMessage message = mItemList.get(position);
 
-        LayoutInflater inflater = mContext.getLayoutInflater();
-        if (message.getOut() == 1) {
+        LayoutInflater inflater = LayoutInflater.from(parent.getContext());
+        if (message.getOut()) {
             convertView = inflater.inflate(R.layout.item_message_right, null, true);
         } else {
             convertView = inflater.inflate(R.layout.item_message_left, null, true);
@@ -66,8 +77,8 @@ public class VkMessageAdapter extends ArrayAdapter<VkMessage> {
         String date = DateFormat.format("HH:mm:ss", cal).toString();
         holder.time.setText(date);
 
-        if (message.getRead() == 0){
-            Resources resources = mContext.getResources();
+        if (!message.getRead()){
+            Resources resources = parent.getResources();
             convertView.setBackgroundColor(resources.getColor(R.color.messageNoRead));
         }
 

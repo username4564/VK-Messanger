@@ -14,6 +14,9 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.qto.ru.vkmessanger.R;
+import com.qto.ru.vkmessanger.drawer.items.HeaderItem;
+import com.qto.ru.vkmessanger.drawer.items.ListItem;
+import com.qto.ru.vkmessanger.drawer.items.SpaceItem;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -51,20 +54,22 @@ public class NavigationDrawerFragment extends Fragment {
         return view;
     }
 
-    public List<DrawerItem> getMenu(){
-        List<DrawerItem> listMenu = new ArrayList<>();
+    public List<IDrawerListItem> getMenu(){
+        List<IDrawerListItem> listMenu = new ArrayList<>();
         Resources resources = getResources();
 
-        listMenu.add(new DrawerItem("VK messanger", "",
-                resources.getDrawable(R.drawable.camera_100)));
-        listMenu.add(new DrawerItem(getString(R.string.title_section1),
+        listMenu.add(new HeaderItem(null, getString(R.string.app_name)));
+
+        listMenu.add(new ListItem(getString(R.string.title_section1),
                 resources.getDrawable(R.drawable.ic_chat_black_24dp)));
-        listMenu.add(new DrawerItem(getString(R.string.title_section2),
+        listMenu.add(new ListItem(getString(R.string.title_section2),
                 resources.getDrawable(R.drawable.ic_group_black_24dp)));
-        listMenu.add(new DrawerItem(getString(R.string.title_section3),
+        listMenu.add(new ListItem(getString(R.string.title_section3),
                 resources.getDrawable(R.drawable.ic_people_outline_black_24dp)));
-        listMenu.add(new DrawerItem());
-        listMenu.add(new DrawerItem(getString(R.string.title_settings),
+
+        listMenu.add(new SpaceItem());
+
+        listMenu.add(new ListItem(getString(R.string.title_settings),
                 resources.getDrawable(R.drawable.ic_settings_white_24dp)));
 
         return listMenu;

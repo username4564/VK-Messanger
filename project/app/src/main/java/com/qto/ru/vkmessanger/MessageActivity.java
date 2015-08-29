@@ -4,7 +4,6 @@ import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.MenuItem;
 
 import com.qto.ru.vkmessanger.fragments.MessageFragment;
@@ -21,7 +20,6 @@ public class MessageActivity extends AppCompatActivity {
         setContentView(R.layout.activity_message);
 
         toolbar = (Toolbar)findViewById(R.id.toolbar);
-        Log.d("XX", "onCreate " + toolbar);
         setSupportActionBar(toolbar);
 
         ActionBar actionBar = getSupportActionBar();

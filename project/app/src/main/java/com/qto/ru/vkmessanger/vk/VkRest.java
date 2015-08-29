@@ -349,26 +349,35 @@ public class VkRest {
             Response response = null;
 
             try {
-                if (GET_ALL_FRIENDS.equals(strings[0])) {
-                    response = mService.getAllUsers(strings[1]);
-                    return ResponseUtils.stringFromResponse(response);
-                } else if (GET_ONLINE_FRIENDS.equals(strings[0])) {
-                    response = mService.getOnlineUsersIds(strings[1], strings[2]);
-                } else if (GET_USERS_BY_ID.equals(strings[0])) {
-                    response = mService.getUsersByIds(strings[1], strings[2]);
-                } else if (GET_DIALOGS.equals(strings[0])) {
-                    response = mService.getDialogs(strings[1], strings[2]);
-                } else if (GET_MESSAGE_HISTORY.equals(strings[0])) {
-                    response = mService.getMessageHistory(strings[1], strings[2], strings[3]);
-                } else if (SEND_MESSAGE.equals(strings[0])) {
-                    response = mService.sendMessage(strings[1], strings[2], strings[3]);
-                } else if (GET_UNREAD_COUNT.equals(strings[0])) {
-                    response = mService.getUnreadCount(strings[1]);
-                } else if (GET_LONG_POLL.equals(strings[0])) {
-                    response = mService.getLongPoll(strings[1]);
+                switch (strings[0]){
+                    case GET_ALL_FRIENDS:
+                        response = mService.getAllUsers(strings[1]);
+                        break;
+                    case GET_ONLINE_FRIENDS:
+                        response = mService.getOnlineUsersIds(strings[1], strings[2]);
+                        break;
+                    case GET_USERS_BY_ID:
+                        response = mService.getUsersByIds(strings[1], strings[2]);
+                        break;
+                    case GET_DIALOGS:
+                        response = mService.getDialogs(strings[1], strings[2]);
+                        break;
+                    case GET_MESSAGE_HISTORY:
+                        response = mService.getMessageHistory(strings[1], strings[2], strings[3]);
+                        break;
+                    case SEND_MESSAGE:
+                        response = mService.sendMessage(strings[1], strings[2], strings[3]);
+                        break;
+                    case GET_UNREAD_COUNT:
+                        response = mService.getUnreadCount(strings[1]);
+                        break;
+                    case GET_LONG_POLL:
+                        response = mService.getLongPoll(strings[1]);
+                        break;
+
                 }
-                //Log.d("XX", "Response: " + response.getUrl());
             } catch (Exception e) {
+                e.printStackTrace();
             }
 
             return ResponseUtils.stringFromResponse(response);

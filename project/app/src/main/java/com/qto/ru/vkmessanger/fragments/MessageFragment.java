@@ -24,7 +24,7 @@ import java.util.Collections;
 import java.util.List;
 
 
-public class MessageFragment extends AbstractFragment<VkMessage> implements View.OnClickListener  {
+public class MessageFragment extends BaseListFragment<VkMessage> implements View.OnClickListener  {
 
     /** id пользователя */
     private long mUid;
@@ -59,7 +59,7 @@ public class MessageFragment extends AbstractFragment<VkMessage> implements View
         mSend.setOnClickListener(this);
 
         mItemList = new ArrayList<>();
-        mListAdapter = new VkMessageAdapter(getActivity(), R.layout.item_message_left, mItemList);
+        mListAdapter = new VkMessageAdapter(mItemList);
         mItemListView.setAdapter(mListAdapter);
 
         mListCount = 40;

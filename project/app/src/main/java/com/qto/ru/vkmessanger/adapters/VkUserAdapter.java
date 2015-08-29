@@ -1,11 +1,10 @@
 package com.qto.ru.vkmessanger.adapters;
 
-import android.app.Activity;
 import android.content.res.Resources;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
+import android.widget.BaseAdapter;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -19,16 +18,13 @@ import java.util.List;
 /**
  * Используется для отображения списка пользователей
  */
-public class VkUserAdapter extends ArrayAdapter<VkUser> {
-    /** Контекст приложения */
-    private final Activity mContext;
+public class VkUserAdapter extends BaseAdapter {
+
     /** Список пользователей */
     private final List<VkUser> mItemList;
 
-    public VkUserAdapter(Activity context, int id, List<VkUser> names) {
-        super(context, id, names);
-        mContext = context;
-        mItemList = names;
+    public VkUserAdapter(List<VkUser> itemList) {
+        mItemList = itemList;
     }
 
     /**
@@ -45,14 +41,29 @@ public class VkUserAdapter extends ArrayAdapter<VkUser> {
     }
 
     @Override
+    public int getCount() {
+        return mItemList.size();
+    }
+
+    @Override
+    public Object getItem(int position) {
+        return mItemList.get(position);
+    }
+
+    @Override
+    public long getItemId(int position) {
+        return mItemList.get(position).getUid();
+    }
+
+    @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         VkUser user = mItemList.get(position);
-        Resources resources = mContext.getResources();
+        Resources resources = parent.getResources();
 
         ViewHolder holder;
 
         if (convertView == null) {
-            LayoutInflater inflater = mContext.getLayoutInflater();
+            LayoutInflater inflater = LayoutInflater.from(parent.getContext());
             convertView = inflater.inflate(R.layout.item_user, null, true);
             holder = new ViewHolder();
             holder.name = (TextView) convertView.findViewById(R.id.name);
@@ -69,7 +80,7 @@ public class VkUserAdapter extends ArrayAdapter<VkUser> {
                 .load(user.getPhoto50Source())
                 .into(holder.photo);
 
-        if (user.getOnline() == 1){
+        if (user.getOnline()){
             holder.online.setBackgroundColor(resources.getColor(R.color.onlineStatus));
         } else {
             holder.online.setBackgroundDrawable(null);

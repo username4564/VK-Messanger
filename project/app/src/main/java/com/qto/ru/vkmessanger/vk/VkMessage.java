@@ -10,11 +10,11 @@ public class VkMessage {
     /** Строка хранящая в себе текст сообщения */
     private String mBody;
     /** Флаг информирующий о том, что сообщения прочитано */
-    private long mRead;
+    private boolean mRead;
     /** Дата отправки сообщения */
     private long mDate;
     /** Флаг информирующий о том, что сообщение исходящее */
-    private long mOut;
+    private boolean mOut;
 
     /**
      * Конструктор сообщения
@@ -27,7 +27,7 @@ public class VkMessage {
      * @param out
      * Флаг исходящего сообщения
      */
-    public VkMessage(String body, long read, long date, long out){
+    public VkMessage(String body, boolean read, long date, boolean out){
         mBody = body;
         mRead = read;
         mDate = date;
@@ -42,9 +42,9 @@ public class VkMessage {
      */
     public VkMessage(JSONObject object) throws JSONException {
         mBody = object.getString("body");
-        mRead = object.getLong("read_state");
+        mRead = object.getLong("read_state") != 0;
         mDate = object.getLong("date");
-        mOut = object.getLong("out");
+        mOut = object.getLong("out") != 0;
     }
 
     /**
@@ -92,7 +92,7 @@ public class VkMessage {
      * @return
      * Флаг исходящего сообщения
      */
-    public long getOut() {
+    public boolean getOut() {
         return mOut;
     }
 
@@ -101,7 +101,7 @@ public class VkMessage {
      * @param out
      * Флаг исходящего сообщения
      */
-    public void setOut(long out) {
+    public void setOut(boolean out) {
         mOut = out;
     }
 
@@ -110,7 +110,7 @@ public class VkMessage {
      * @return
      * Флаг прочитанного сообщения
      */
-    public long getRead() {
+    public boolean getRead() {
         return mRead;
     }
 
@@ -119,7 +119,7 @@ public class VkMessage {
      * @param read
      * Флаг прочитанного сообщения
      */
-    public void setRead(long read) {
+    public void setRead(boolean read) {
         mRead = read;
     }
 
